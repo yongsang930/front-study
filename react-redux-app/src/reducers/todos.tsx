@@ -3,17 +3,27 @@ enum ActionTypes {
   DELETE_TODO = "DELETE_TODO",
 }
 
-interface Action {
-  type: ActionTypes;
+interface AddTodoAction {
+  type: ActionTypes.ADD_TODO;
   text: string;
 }
 
-const todos = (state = [], action: Action) => {
+interface DeleteTodoAction {
+  type: ActionTypes.DELETE_TODO;
+  text: string;
+}
+
+type Action = AddTodoAction | DeleteTodoAction;
+
+const initialState: string[] = [];
+
+const todos = (state: string[] = initialState, action: Action): string[] => {
   switch (action.type) {
-    case "ADD_TODO":
+    case ActionTypes.ADD_TODO:
       return [...state, action.text];
     default:
       return state;
   }
 };
+
 export default todos;

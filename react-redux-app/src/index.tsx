@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createStore } from "redux";
+import { Provider } from "react-redux";
+import { applyMiddleware, legacy_createStore as createStore } from "redux";
 import App from "./App";
 import "./index.css";
 import rootReducer from "./reducers";
@@ -10,19 +11,26 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
 
-const store = createStore(rootReducer);
+const loggerMiddleWare = (store: any) => (next: any) => (action: any) => {
+  console.log("store", store);
+  console.log("action", action);
+  next(action);
+};
 
-store.dispatch({ type: "ADD_TODO", text: "USE_REDUX" });
-console.log(store.getState());
+const middleWare = applyMiddleware(loggerMiddleWare);
+
+const store = createStore(rootReducer, undefined, middleWare);
 
 const render = () =>
   root.render(
     <React.StrictMode>
-      <App
-        onIncrement={() => store.dispatch({ type: "INCREMENT" })}
-        onDecrement={() => store.dispatch({ type: "DECREMENT" })}
-        value={store.getState()}
-      />
+      <Provider store={store}>
+        <App
+          onIncrement={() => store.dispatch({ type: "INCREMENT" })}
+          onDecrement={() => store.dispatch({ type: "DECREMENT" })}
+          value={store.getState()}
+        />
+      </Provider>
     </React.StrictMode>,
   );
 
